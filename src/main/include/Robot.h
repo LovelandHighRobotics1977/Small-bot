@@ -16,6 +16,8 @@
 //timer library
 #include <frc/Timer.h>
 
+#include <frc/DigitalInput.h>
+
 
 class Robot : public frc::TimedRobot {
  public:
@@ -29,7 +31,7 @@ class Robot : public frc::TimedRobot {
   void TeleopPeriodic() override;
   //written to control left side and right side independantly with one line
   // Drive(Left side speed (-1 to 1), right side speed (-1 to 1))
-  void Drive(float left, float right);
+  void Drive(float left, float right, bool stop);
 
   void DisabledInit() override;
   void DisabledPeriodic() override;
@@ -40,12 +42,20 @@ class Robot : public frc::TimedRobot {
   private:
   //Declaring xbox contoller
   frc::XboxController m_driverController{0};
+  
   //Declaring motors and establishing CAN IDs 
   //use phoenix tuner to get CAN IDs and put them in the brackets
-  WPI_TalonFX m_r1{4};
-  WPI_TalonFX m_r2{3};
   WPI_TalonFX m_l1{1};
   WPI_TalonFX m_l2{2};
+  WPI_TalonFX m_r1{3};
+  WPI_TalonFX m_r2{4};
+  
+  WPI_TalonSRX m_angle{5};
+  WPI_TalonSRX m_intake{6};
+
+  frc::DigitalInput m_LowerSwitch{0};
+  frc::DigitalInput m_UpperSwitch{1};
+
   //Declaring timer to use for timed events like autonomous
   frc::Timer timer;
 };
