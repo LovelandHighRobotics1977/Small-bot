@@ -20,6 +20,29 @@ void Robot::AutonomousInit() {
   //reseting and starting timer from zero every time autonomous is run
   timer.Reset();
   timer.Start();
+  double driveSpeed = 0.3;
+  while(-m_LowerSwitch.Get())
+  {
+    m_angle.Set(1);
+  }
+  m_angle.Set(0);
+  m_intake.Set(1);
+  Drive(driveSpeed,driveSpeed, false);
+  std::this_thread::sleep_for(std::chrono::milliseconds(300));
+  Drive(0,0, true);
+  m_intake.Set(0);
+  while(-m_UpperSwitch.Get())
+  {
+    m_angle.Set(-1);
+  }
+  m_angle.Set(0);
+  Drive(-driveSpeed, -driveSpeed, false);
+  std::this_thread::sleep_for(std::chrono::milliseconds(300));
+  Drive(0,0, true);
+  m_intake.Set(-1);
+  Drive(driveSpeed, driveSpeed, false);
+  std::this_thread::sleep_for(std::chrono::milliseconds(300));
+  Drive(0,0, true);
 }
 void Robot::AutonomousPeriodic() {
   std::cout<<"Starting Autonomous Routine"<<std::endl;
