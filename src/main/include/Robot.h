@@ -17,6 +17,7 @@
 #include <frc/Timer.h>
 
 #include <frc/DigitalInput.h>
+#include <frc/Joystick.h>
 
 
 class Robot : public frc::TimedRobot {
@@ -32,6 +33,8 @@ class Robot : public frc::TimedRobot {
   //written to control left side and right side independantly with one line
   // Drive(Left side speed (-1 to 1), right side speed (-1 to 1))
   void Drive(float left, float right, bool stop);
+  void Direction();
+  void Arm();
 
   void DisabledInit() override;
   void DisabledPeriodic() override;
@@ -55,7 +58,7 @@ class Robot : public frc::TimedRobot {
 
   frc::DigitalInput m_LowerSwitch{0};
   frc::DigitalInput m_UpperSwitch{1};
-
+  frc::Joystick m_joystick{1};
   //Declaring timer to use for timed events like autonomous
   frc::Timer timer;
 };

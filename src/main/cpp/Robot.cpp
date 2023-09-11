@@ -35,10 +35,8 @@ void Robot::AutonomousInit() {
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   m_intake.Set(0);
   m_angle.Set(1);
-  Drive(-driveSpeed, -driveSpeed-0.25, false);
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));  
   Drive(-driveSpeed, -driveSpeed, false);
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  std::this_thread::sleep_for(std::chrono::milliseconds(2000));
   m_angle.Set(0);
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   m_intake.Set(-1);
@@ -62,13 +60,19 @@ void Robot::TeleopInit() {
 }
 void Robot::TeleopPeriodic() {
   //calling drive with xbox stick input
-  Drive(m_driverController.GetLeftY(),m_driverController.GetRightY(),m_driverController.GetAButton());
+  /*Drive(m_driverController.GetLeftY(),m_driverController.GetRightY(),m_driverController.GetAButton());
   m_intake.Set((m_driverController.GetRightBumper() - m_driverController.GetLeftBumper()) * 1);
-  m_angle.Set((
+  */
+ Direction();
+  /*m_angle.Set((
     (m_driverController.GetLeftTriggerAxis() * !m_UpperSwitch.Get()) - 
     (m_driverController.GetRightTriggerAxis() * !m_LowerSwitch.Get())
     ) * 1);
     //std::cout << ((m_driverController.GetLeftTriggerAxis() * !m_UpperSwitch.Get()) - (m_driverController.GetRightTriggerAxis() * !m_LowerSwitch.Get()));
+    */
+  Arm();
+
+  //std::cout<<m_LowerSwitch.Get()<<"    -    "<<m_UpperSwitch.Get()<<"    -    "<<m_joystick.GetRawAxis(4)<<std::endl;
 }
 
 void Robot::DisabledInit() {
@@ -79,10 +83,56 @@ void Robot::DisabledPeriodic() {}
 void Robot::TestInit() {}
 void Robot::TestPeriodic() {}
 
+void Robot::Direction()
+{
+  float forward = m_joystick.GetY();
+  float rotation = m_joystick.GetX();
+  //std::cout << "left motor " << forward-rotation << "\nright motor " << forward + rotation << "\n";
+  Drive(forward - rotation, forward + rotation, false);
+}
+void Robot::Arm()
+{
+  //std::cout << m_joystick.GetRawAxis(4) << std::endl;
+  if(m_joystick.GetRawAxis(4) > 0)
+  {
+    //std::cout << "enterd arm up\n"; 
+    while(!m_LowerSwitch.Get())
+    {
+      m_angle.Set(1);
+      //std::cout << "arm up\n";
+    }
+  }
+  else
+  {
+    //std::cout << "enterd arm down";
+    while(!m_UpperSwitch.Get())
+    {
+      m_angle.Set(-1);
+      //std::cout << "arm down\n";
+    }
+  }
+  //std::cout << "arm stop/n";
+  m_angle.Set(0);
+  if (m_joystick.GetRawButton(1))
+  {
+    m_intake.Set(-1);
+    //std::cout << "intake in\n";
+  }
+  else if(m_joystick.GetRawButton(7))
+  {
+    m_intake.Set(0.6);
+    //std::cout << "intake out";
+  }
+  else
+  {
+    m_intake.Set(0);
+  }
+}
+
 void Robot::Drive(float left, float right, bool stop){
   //setting motor speeds to parameters
-  left *= -0.99;
-  right *= 1;
+  left *= -0.69;
+  right *= 0.7;
   m_l1.Set(left);
   m_l2.Set(left);
   m_r1.Set(right);
