@@ -142,10 +142,14 @@ void Robot::Drive(float left, float right, bool stop){
   //setting motor speeds to parameters
   left *= -0.39;
   right *= 0.4;
-  m_l1.Set(left);
-  m_l2.Set(left);
-  m_r1.Set(right);
-  m_r2.Set(right); 
+  if (m_pdp.GetCurrent(14) < 10 && m_pdp.GetCurrent(15) < 10 && m_pdp.GetCurrent(16) < 10 && m_pdp.GetCurrent(17) < 10)
+  {
+    m_l1.Set(left);
+    m_l2.Set(left);
+    m_r1.Set(right);
+    m_r2.Set(right); 
+  }
+  
 
   if(stop){
     m_l1.SetNeutralMode(Brake);

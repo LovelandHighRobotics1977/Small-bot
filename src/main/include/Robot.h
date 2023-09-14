@@ -18,7 +18,7 @@
 
 #include <frc/DigitalInput.h>
 #include <frc/Joystick.h>
-
+#include <frc/PowerDistribution.h>
 
 class Robot : public frc::TimedRobot {
  public:
@@ -52,13 +52,16 @@ class Robot : public frc::TimedRobot {
   WPI_TalonFX m_l2{2};
   WPI_TalonFX m_r1{3};
   WPI_TalonFX m_r2{4};
-  
+  //declareing mech motore
   WPI_TalonSRX m_angle{5};
   WPI_TalonSRX m_intake{6};
-
+  //declaring limit switches
   frc::DigitalInput m_LowerSwitch{0};
   frc::DigitalInput m_UpperSwitch{1};
+  //declaring inputs
   frc::Joystick m_joystick{1};
+  //declaring power distabution for current limiting
+  frc::PowerDistribution m_pdp{1, frc::PowerDistribution::ModuleType::kRev};  
   //Declaring timer to use for timed events like autonomous
   frc::Timer timer;
 };
