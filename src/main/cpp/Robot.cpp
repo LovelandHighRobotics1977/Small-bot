@@ -140,8 +140,8 @@ void Robot::Arm()
 
 void Robot::Drive(float left, float right, bool stop){
   //setting motor speeds to parameters
-  left *= -0.39;
-  right *= 0.4;
+  left *= -0.99;
+  right *= 1;
   if (m_pdp.GetCurrent(14) < 10 && m_pdp.GetCurrent(15) < 10 && m_pdp.GetCurrent(16) < 10 && m_pdp.GetCurrent(17) < 10)
   {
     m_l1.Set(left);
@@ -151,7 +151,7 @@ void Robot::Drive(float left, float right, bool stop){
   }
   
 
-  if(stop){
+  if(left == 0 && right == 0){
     m_l1.SetNeutralMode(Brake);
     m_l2.SetNeutralMode(Brake);
     m_r1.SetNeutralMode(Brake);
