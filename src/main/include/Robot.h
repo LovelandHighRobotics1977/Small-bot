@@ -24,7 +24,6 @@ class Robot : public frc::TimedRobot {
  public:
   void RobotInit() override;
   void RobotPeriodic() override;
-  bool up = true;
 
   void AutonomousInit() override;
   void AutonomousPeriodic() override;
@@ -65,4 +64,5 @@ class Robot : public frc::TimedRobot {
   frc::PowerDistribution m_pdp{1, frc::PowerDistribution::ModuleType::kRev};  
   //Declaring timer to use for timed events like autonomous
   frc::Timer timer;
+  frc::Timer armTime;
 };
