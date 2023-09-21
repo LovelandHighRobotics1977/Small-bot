@@ -101,19 +101,16 @@ void Robot::Arm()
 {
   //std::cout << m_joystick.GetRawAxis(4) << std::endl; 
     //std::cout << "enterd arm up\n"; 
-    if (m_joystick.GetRawButton(6))
-    {
-      if(m_UpperSwitch.Get() == 0 && armTime.AdvanceIfElapsed(units::second_t(0.5)))
+      if(m_UpperSwitch.Get() == 0 && armTime.AdvanceIfElapsed(units::second_t(0.5)) && m_joystick.GetRawButton(6))
       {
         m_angle.Set(1);
         std::cout << "arm up\n";
       }
-      else if(m_LowerSwitch.Get() == 0 && armTime.AdvanceIfElapsed(units::second_t(0.5)))
+      else if(m_LowerSwitch.Get() == 0 && armTime.AdvanceIfElapsed(units::second_t(0.5)) && m_joystick.GetRawButton(6))
       {
         m_angle.Set(-1);
         std::cout << "arm down\n";
       }
-    }
   if (m_joystick.GetRawButton(1))
   {
     m_intake.Set(-1);
