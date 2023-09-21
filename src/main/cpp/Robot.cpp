@@ -22,21 +22,31 @@ void Robot::AutonomousInit() {
   timer.Start();
   armTime.Reset();
   armTime.Start();
-  double driveSpeed = -0.3;
+  double driveSpeed = -0.25;
   m_intake.Set(-1);
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
   m_intake.Set(0);
   Drive(driveSpeed, driveSpeed, false);
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  std::this_thread::sleep_for(std::chrono::milliseconds(50));
+  Drive(driveSpeed+0.1, driveSpeed-0.1, false);
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  Drive(0, 0, false);
+  Drive(driveSpeed, driveSpeed, false);
+  std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  Drive(driveSpeed-0.1, driveSpeed+0.1, false);
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  Drive(driveSpeed, driveSpeed+0.3, false);
   m_angle.Set(-0.6);
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
   m_angle.Set(0);
-  std::this_thread::sleep_for(std::chrono::milliseconds(1));
   m_intake.Set(1);
-  Drive(driveSpeed, driveSpeed, false);
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  std::this_thread::sleep_for(std::chrono::milliseconds(2500));
   m_intake.Set(0);
   m_angle.Set(1);
+  Drive(0, 0, true);
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  m_angle.Set(0);
+  /*
   Drive(-driveSpeed, -driveSpeed, false);
   std::this_thread::sleep_for(std::chrono::milliseconds(2000));
   m_angle.Set(0);
@@ -59,6 +69,10 @@ void Robot::AutonomousPeriodic() {
 
 void Robot::TeleopInit() {
   Drive(0,0,true);
+  if (m_LowerSwitch.Get())
+  {
+    down = false;
+  }
 }
 void Robot::TeleopPeriodic() {
   Direction();
@@ -67,7 +81,7 @@ void Robot::TeleopPeriodic() {
 }
 
 void Robot::DisabledInit() {
-  Drive(0,0,true);
+  Drive(0,0,false);
 }
 void Robot::DisabledPeriodic() {}
 
@@ -101,16 +115,30 @@ void Robot::Arm()
 {
   //std::cout << m_joystick.GetRawAxis(4) << std::endl; 
     //std::cout << "enterd arm up\n"; 
-      if(m_UpperSwitch.Get() == 0 && armTime.AdvanceIfElapsed(units::second_t(0.5)) && m_joystick.GetRawButton(6))
-      {
-        m_angle.Set(1);
-        std::cout << "arm up\n";
-      }
-      else if(m_LowerSwitch.Get() == 0 && armTime.AdvanceIfElapsed(units::second_t(0.5)) && m_joystick.GetRawButton(6))
+    if(m_joystick.GetRawButton(6))
+    {
+            if(m_UpperSwitch.Get() == 0/* && armTime.AdvanceIfElapsed(units::second_t(0.5))*/)
       {
         m_angle.Set(-1);
-        std::cout << "arm down\n";
+        down = false;
+        //std::cout << "arm up\n";
       }
+      if(m_LowerSwitch.Get() == 0/* && armTime.AdvanceIfElapsed(units::second_t(0.5))*/)
+      {
+        m_angle.Set(1);
+        down = true;
+        //std::cout << "arm down\n";
+      }
+    }
+    else if(down && m_LowerSwitch.Get() == 0)
+    {
+      m_angle.Set(1);
+    }
+    else
+    {
+      m_angle.Set(0);
+    }
+
   if (m_joystick.GetRawButton(1))
   {
     m_intake.Set(-1);

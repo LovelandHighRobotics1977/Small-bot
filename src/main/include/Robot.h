@@ -42,6 +42,8 @@ class Robot : public frc::TimedRobot {
   void TestInit() override;
   void TestPeriodic() override;
 
+  bool down = true;
+
   private:
   //Declaring xbox contoller
   //frc::XboxController m_driverController{0};
