@@ -23,7 +23,7 @@ void Robot::AutonomousInit() {
   armTime.Reset();
   armTime.Start();
   double driveSpeed = -0.25;
-  switch (Robot.atonMode) {
+  switch (Robot::atonMode) {
   case 1:
     m_intake.Set(-1);
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -40,7 +40,7 @@ void Robot::AutonomousInit() {
     m_angle.Set(-1);
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
     m_angle.Set(0);
-    Drive(driveSpeed, driveSpeed + 0.2, false)
+    Drive(driveSpeed, driveSpeed + 0.2, false);
     m_intake.Set(1);
     std::this_thread::sleep_for(std::chrono::milliseconds(2500));
     m_intake.Set(0);
