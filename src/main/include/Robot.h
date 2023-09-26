@@ -42,6 +42,8 @@ class Robot : public frc::TimedRobot {
   void TestInit() override;
   void TestPeriodic() override;
 
+  int atonMode = 1;
+
   private:
   //Declaring xbox contoller
   //frc::XboxController m_driverController{0};
@@ -60,6 +62,7 @@ class Robot : public frc::TimedRobot {
   frc::DigitalInput m_UpperSwitch{1};
   //declaring inputs
   frc::Joystick m_joystick{1};
+  frc::XboxController m_xBox{0};
   //declaring power distabution for current limiting
   frc::PowerDistribution m_pdp{1, frc::PowerDistribution::ModuleType::kRev};  
   //Declaring timer to use for timed events like autonomous
