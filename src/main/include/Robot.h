@@ -42,7 +42,9 @@ class Robot : public frc::TimedRobot {
   void TestInit() override;
   void TestPeriodic() override;
 
-  int atonMode = 1;
+  int atonMode = 3;
+
+  float armspeed = 0.7;
 
   private:
   //Declaring xbox contoller
