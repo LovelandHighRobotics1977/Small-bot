@@ -198,7 +198,7 @@ void Robot::Arm() {
     m_angle.Set(0);
   }
   if (m_xBox.GetRawButton(6)) {
-    m_intake.Set(-1);
+    m_intake.Set(-0.7);
     // std::cout << "intake in\n";
   } else if (m_xBox.GetRawButton(5)) {
     m_intake.Set(0.6);
