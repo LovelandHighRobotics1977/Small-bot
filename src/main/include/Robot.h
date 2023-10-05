@@ -42,7 +42,11 @@ class Robot : public frc::TimedRobot {
   void TestInit() override;
   void TestPeriodic() override;
 
-  int atonMode = 3;
+  void driveFor(int distance, float speed);
+
+  void turnFor(int degrees, float speed, char direction);
+
+  int atonMode = 0;
 
   float armspeed = 0.7;
 
@@ -62,6 +66,9 @@ class Robot : public frc::TimedRobot {
   //declaring limit switches
   frc::DigitalInput m_LowerSwitch{0};
   frc::DigitalInput m_UpperSwitch{1};
+  frc::DigitalInput m_Auto1{2};
+  frc::DigitalInput m_Auto2{3};
+  frc::DigitalInput m_Auto3{4};
   //declaring inputs
   frc::Joystick m_joystick{1};
   frc::XboxController m_xBox{0};
