@@ -4,259 +4,265 @@
 
 #include "Robot.h"
 
-void Robot::RobotInit() {
 
-	frc::SmartDashboard::PutString("Match State","   Disabled");
-	frc::SmartDashboard::PutString("Robot Name",Swordtip::Misc::Robot_Name);
-
-	frc::SmartDashboard::PutNumber("X_POS", 0);
-	frc::SmartDashboard::PutNumber("Y_POS", 0);
-
-	frc::SmartDashboard::PutNumber("X_VEL", 0);
-	frc::SmartDashboard::PutNumber("Y_VEL", 0);
-
-	m_swerve.Drive(0_fps,0_fps,0_deg_per_s,0,Swordtip::Frame::RotationPoints::Center);
-	m_cubeArm.SetIntake(0,0);
-	m_cubeArm.SetAngle(0,0);
-	m_cubeArm.SetSpeed(0,0,0);
-
-	timer.Start();
-
-	/*
-	r_driveCam = frc::CameraServer::StartAutomaticCapture(0);
-	r_armCam = frc::CameraServer::StartAutomaticCapture(1);
-
-	r_driveCam.SetPixelFormat(cs::VideoMode::PixelFormat::kYUYV);
-	r_armCam.SetPixelFormat(cs::VideoMode::PixelFormat::kYUYV);
-	*/
+void Robot::RobotInit()
+{
+  Drive(0, 0, true);
+  m_intake.SetNeutralMode(Coast);
+  m_angle.SetNeutralMode(Brake);
+  m_l1.SetNeutralMode(Coast);
+  m_l2.SetNeutralMode(Coast);
+  m_r1.SetNeutralMode(Coast);
+  m_r2.SetNeutralMode(Coast);
 }
-void Robot::RobotPeriodic() {
+void Robot::RobotPeriodic() {}
 
-	robot_position = m_swerve.UpdateOdometry();
+void Robot::AutonomousInit()
+{
+  Drive(0, 0, true);
+  // reseting and starting timer from zero every time autonomous is run
+  timer.Reset();
+  timer.Start();
+  armTime.Reset();
+  armTime.Start();
+  double driveSpeed = -0.25;
+  switch (Robot::atonMode)
+  {
+  case 0:
+  scoreAuto();
 
+  break;
+  case 1:
+    scoreAuto();
+    driveFor(2, 0.4);
+    turnFor(22.5, 0.25, 'r');
+    driveFor(4, 0.4);
+    turnFor(22.5, 0.25, 'l');
+    driveFor(12, 0.4);
+  break;
+
+    //--------------------------------------------------------
+    //--------------------------------------------------------
+    //--------------------------------------------------------
+
+  case 2:
+    // middle
+   driveSpeed = 0.6;
+   scoreAuto();
+    forwardFunction();
+    m_angle.Set(1);
+    break;
+
+  case 3:
+    // right
+    scoreAuto();
+    driveFor(1, 0.25);
+    turnFor(22.5, 0.25, 'l');
+    driveFor(3.5, 0.25);
+    turnFor(23, 0.25, 'r');
+    driveFor(12, 0.25);
+    break;
+  default:
+    std::cout << "idiot";
+
+  std::cout << "sending drive";
+  driveFor(10, 0.25);
+
+    break;
+  }
 }
-
-void Robot::AutonomousInit() {
-
-	frc::SmartDashboard::PutString("Match State","   Autonomous");
-
-	m_swerve.Drive(0_mps,0_mps,0_deg_per_s,0,Swordtip::Frame::RotationPoints::Center);
-	m_swerve.SetNeutralMode(Brake);
-	
-	timer.Restart();
-
-	gyro->Reset();
-
-}
-void Robot::AutonomousPeriodic() {
-
-	current_time = std::ceil(timer.Get().value());
-
-	// Set autonomous stage based on time elapsed
-	switch (current_time){
-		case 1: auto_stage = 1; break;
-		case 2: auto_stage = 2; break;
-		case 3: auto_stage = 3; break;
-		case 4: auto_stage = 4; break;
-		case 5: auto_stage = 5; break;
-		default: auto_stage = 5; break;
-	}
-	switch(autoCase)
-	{
-		case 1://right station
-			switch (auto_stage){
-				case 1: 
-					// Fire a cube into the mid node
-					m_cubeArm.SetSpeed(0,1,0);
-					m_cubeArm.SetIntake(0,1);
-					break;
-
-				case 2: 
-					// Stop the intake and drive quickly away going slightly to the right
-					m_cubeArm.SetIntake(0,0);
-					m_swerve.Drive(Swordtip::Velocity::Maximums::Max_Speed,3_fps,0_deg_per_s,1,Swordtip::Frame::RotationPoints::Center);
-					break;
-
-				case 3: 
-					// Drive to the left to approach the charge station from behind
-					m_swerve.Drive(0_mps,0_mps,-90_deg_per_s,1,Swordtip::Frame::RotationPoints::Center);
-					break;
-
-				case 4:
-					// Auto Balance the robot
-					m_swerve.Drive( 0_fps, -Swordtip::Velocity::Maximums::Max_Speed, 0_deg_per_s, 0.3, Swordtip::Frame::RotationPoints::Center);
-			
-				break;
-				case 5:
-					m_swerve.AutoBalance();
-				break;
-
-				default:
-					// Freeze the robot if not in any stage
-					m_swerve.HaltRobot();
-					break;
-
-				}
-		break;
-		case 2://mid station
-			switch (auto_stage){
-				case 1: 
-					// Fire a cube into the mid node
-					m_cubeArm.SetSpeed(0,1,0);
-					m_cubeArm.SetIntake(0,1);
-					break;
-
-				case 2: 
-					// Stop the intake and drive quickly away 
-					m_cubeArm.SetIntake(0,0);
-					m_swerve.Drive(5_fps,0_fps,0_deg_per_s,1,Swordtip::Frame::RotationPoints::Center);
-					break;
-
-				case 3: 
-					//auto balance
-					m_swerve.AutoBalance();
-					break;
-			break;
-
-			default:
-				// Freeze the robot if not in any stage
-				m_swerve.HaltRobot();
-				break;
-
-		}
-		break;
-		case 3://left station
-			switch (auto_stage){
-				case 1: 
-					// Fire a cube into the mid node
-					m_cubeArm.SetSpeed(0,1,0);
-					m_cubeArm.SetIntake(0,1);
-					break;
-
-				case 2: 
-					// Stop the intake and drive quickly away moving ever so slightly to the left to avoid the ramp
-					m_cubeArm.SetIntake(0,0);
-					m_swerve.Drive(5_fps,0.5_fps,0_deg_per_s,1,Swordtip::Frame::RotationPoints::Center);
-					break;
-
-				case 3: 
-					//turn to pick up cube and put the arm down
-					m_swerve.Drive(0_fps,0_fps,90_deg_per_s,1,Swordtip::Frame::RotationPoints::Center);
-					m_cubeArm.SetAngle(false, true);
-					m_cubeArm.SetIntake(true, false);					
-					break;
-				case 4:
-				//pick up cube
-					m_swerve.Drive(5_fps,0_fps,0_deg_per_s,1,Swordtip::Frame::RotationPoints::Center);
-					m_cubeArm.SetIntake(false, false);
-					m_cubeArm.SetAngle(true, false);
-					break;
-				case 5:
-				//drive onto platform and balance
-					m_swerve.Drive(-5_fps,0_fps,-90_deg_per_s,1,Swordtip::Frame::RotationPoints::Center);
-					m_swerve.AutoBalance();
-					break;
-				
-			break;
-
-			default:
-				// Freeze the robot if not in any stage
-				m_swerve.HaltRobot();
-				break;
-
-		}
-		break;
-		default:
-			m_swerve.HaltRobot();
-		break;
-	};
-	// Autonomous stages
-	
+void Robot::AutonomousPeriodic()
+{
+  /*
+  std::cout << "Starting Autonomous Routine" << std::endl;
+  std::cout << "Autonomous Routine Complete" << std::endl;
+  */
 }
 
-void Robot::TeleopInit() {
-
-	frc::SmartDashboard::PutString("Match State","   TeleOperated");
-
-	m_swerve.SetNeutralMode(Brake);
-	
-	gyro->Reset();
-
+void Robot::TeleopInit() { Drive(0, 0, true); }
+void Robot::TeleopPeriodic()
+{
+  Direction();
+  armTime.Reset();
+  Arm();
 }
 
-void Robot::TeleopPeriodic() {
-
-	driver.update();
-	shooter.update();
-
-	// Reset Gyro
-	if(driver.gyro_reset){
-		gyro->Reset();
-	}
-
-	// Control mechanism
-	m_cubeArm.SetAngle(shooter.angle_up, shooter.angle_down);
-	m_cubeArm.SetIntake(shooter.intake_in, shooter.intake_out);
-	m_cubeArm.SetSpeed(shooter.speed_slow, shooter.speed_medium, shooter.speed_fast);
-	
-	// Select rotation speed from triggers
-	switch ((driver.trigger_one + driver.trigger_two)){
-	case 0:
-		center_of_rotation = Swordtip::Frame::RotationPoints::Center;
-		rotation_speed = Swordtip::Velocity::Rotation::Slow;
-		break;
-	
-	case 1:
-		center_of_rotation = Swordtip::Frame::RotationPoints::Center;
-		rotation_speed = Swordtip::Velocity::Rotation::Medium;
-		break;
-
-	case 2:
-		center_of_rotation = Swordtip::Frame::RotationPoints::Center;
-		rotation_speed = Swordtip::Velocity::Rotation::Fast;
-		break;
-	}
-
-	forward = (-m_forwardLimiter.Calculate(frc::ApplyDeadband(driver.forward, 0.2)) * driver.throttle) * Swordtip::Velocity::Maximums::Max_Speed;
-	strafe = (-m_strafeLimiter.Calculate(frc::ApplyDeadband(driver.strafe, 0.2)) * driver.throttle) * Swordtip::Velocity::Maximums::Max_Speed;
-	rotate = (-m_rotateLimiter.Calculate(frc::ApplyDeadband(driver.rotate, 0.3)) * sqrt(driver.throttle)) * rotation_speed;
-
-	// Drive the swerve modules
-	if(driver.emergency_stop){
-		// Emergency braking (Button 5)
-		m_swerve.HaltRobot();
-	}else{
-		// Normal Drive
-		m_swerve.Drive(forward, strafe, rotate, driver.field_oriented, center_of_rotation);
-	}
-
-	std::cout<<rotate.value()<<std::endl;
-
-	// Put values to SmartDashboard
-	frc::SmartDashboard::PutNumber("throttle", driver.throttle);
-	
-	frc::SmartDashboard::PutNumber("Angle", static_cast<int>(gyro->GetYaw()));
-	frc::SmartDashboard::PutNumber("X_POS", robot_position.X().value());
-	frc::SmartDashboard::PutNumber("Y_POS", robot_position.Y().value());
-
-	frc::SmartDashboard::PutNumber("R_VEL", (double) rotate);
-	frc::SmartDashboard::PutNumber("X_VEL", gyro->GetVelocityX());
-	frc::SmartDashboard::PutNumber("Y_VEL", gyro->GetVelocityY());
-}
-
-void Robot::DisabledInit() {
-	frc::SmartDashboard::PutString("Match State","   Disabled");
-	m_swerve.HaltRobot();
-}
+void Robot::DisabledInit() { Drive(0, 0, false); }
 void Robot::DisabledPeriodic() {}
 
-void Robot::TestInit() {
-	frc::SmartDashboard::PutString("Match State","   Test");
-}
+void Robot::TestInit() {}
 void Robot::TestPeriodic() {}
 
-#ifndef RUNNING_FRc_TESTS
-int main() {
-	return frc::StartRobot<Robot>();
+void Robot::Direction()
+{
+  float forward = m_joystick.GetY();
+  float rotation = m_joystick.GetX();
+  if (!m_joystick.GetRawButton(2))
+  {
+    rotation /= 1.5;
+  }
+  if (m_joystick.GetRawButton(3))
+  {
+    rotation *= 2;
+  }
+  // std::cout << "left motor " << forward-rotation << "\nright motor " <<
+  // forward + rotation << "\n";
+  if (forward > 0.2 || forward < -0.2 || rotation > 0.2 || rotation < -0.2)
+  {
+    Drive(forward - rotation, forward + rotation, false);
+  }
+  else
+  {
+    Drive(0, 0, false);
+  }
+}
+void Robot::Arm()
+{
+  //std::cout << m_joystick.GetRawAxis(4) << std::endl;
+  //std::cout << "enterd arm up\n";
+  if(m_xBox.GetXButtonPressed())
+  {
+    Robot::armspeed = 0.6;
+  }
+  else if (m_xBox.GetYButtonPressed())
+  {
+    Robot::armspeed = 1;
+  }
+  if(m_xBox.GetAButtonPressed())
+  {
+    scoreAuto();
+  }
+  float armAngle = ((m_xBox.GetRawAxis(2) + 1) / 2) - ((m_xBox.GetRawAxis(3) + 1) / 2);
+  if (armAngle > 0 && m_LowerSwitch.Get() == false)
+  {
+    m_angle.Set(1);
+  }
+  else if (armAngle < 0 && m_UpperSwitch.Get() == false)
+  {
+    m_angle.Set(-1);
+  }
+  else
+  {
+    m_angle.Set(0);
+  }
+  if (m_xBox.GetRawButton(6))
+  {
+    m_intake.Set(-Robot::armspeed);
+    // std::cout << "intake in\n";
+  }
+  else if (m_xBox.GetRawButton(5))
+  {
+    m_intake.Set(0.4);
+    // std::cout << "intake out";
+  }
+  else
+  {
+    m_intake.Set(0);
+  }
+}
+
+void Robot::scoreAuto()
+{
+  m_angle.Set(-1);
+  std::this_thread::sleep_for(std::chrono::milliseconds(240));
+  m_intake.Set(-1);
+  std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  m_angle.Set(1);
+  m_intake.Set(0);
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  m_angle.Set(0);
+}
+
+
+void Robot::driveFor (int distance, float speed)
+{
+  int time = fabs(distance * (61 / speed));
+  m_l1.SetNeutralMode(Coast);
+  m_l2.SetNeutralMode(Coast);
+  m_r1.SetNeutralMode(Coast);
+  m_r2.SetNeutralMode(Coast);
+  m_l1.Set(-speed);
+  m_l2.Set(-speed);
+  m_r1.Set(speed);
+  m_r2.Set(speed);
+  std::this_thread::sleep_for(std::chrono::milliseconds(time));
+  Drive(0, 0, true);
+}
+
+void Robot::turnFor(int degrees, float speed, char direction)
+{
+  int time = fabs(degrees * (1.55 / speed));
+  if (direction == 'r')
+  {
+    m_l1.Set(speed -
+          (0.02 * (1 - speed)));
+    m_l2.Set(speed -
+          (0.02 * (1 - speed)));
+    m_r1.Set(speed);
+    m_r2.Set(speed);
+  }
+  else if (direction == 'l')
+  {
+    m_l1.Set(-speed);
+    m_l2.Set(-speed);
+    m_r1.Set(-speed);
+    m_r2.Set(-speed);
+  }
+  std::this_thread::sleep_for(std::chrono::milliseconds(time));
+  Drive(0, 0, true);
+}
+
+
+void Robot::Drive(float left, float right, bool stop)
+{
+  // setting motor speeds to parameters
+  left *= -(((-m_joystick.GetRawAxis(4)) + 1) / 2) -
+          (0.02 * (1 - m_joystick.GetRawAxis(4)));
+  right *= (((-m_joystick.GetRawAxis(4)) + 1) / 2);
+  // if (m_pdp.GetCurrent(14) < 10 && m_pdp.GetCurrent(15) < 10 &&
+  // m_pdp.GetCurrent(16) < 10 && m_pdp.GetCurrent(17) < 10)
+  {
+    m_l1.Set(left);
+    m_l2.Set(left);
+    m_r1.Set(right);
+    m_r2.Set(right);
+  }
+  /*
+  else
+  {
+    m_l1.Set(0);
+    m_l2.Set(0);
+    m_r1.Set(0);
+    m_r2.Set(0);
+  }
+  */
+
+
+  if (left == 0 && right == 0)
+  {
+    m_l1.SetNeutralMode(Brake);
+    m_l2.SetNeutralMode(Brake);
+    m_r1.SetNeutralMode(Brake);
+    m_r2.SetNeutralMode(Brake);
+  }
+  else
+  {
+    m_l1.SetNeutralMode(Coast);
+    m_l2.SetNeutralMode(Coast);
+    m_r1.SetNeutralMode(Coast);
+    m_r2.SetNeutralMode(Coast);
+  }
+}
+void Robot::forwardFunction(){
+  driveFor(15, 0.65);
+  driveFor(6, 0.2);
+  //m_intake.Set();
+  //m_angle();
+}
+
+#ifndef RUNNING_FRC_TESTS
+int main()
+{
+  return frc::StartRobot<Robot>();
 }
 #endif
