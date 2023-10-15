@@ -79,7 +79,7 @@ void Robot::AutonomousPeriodic()
   */
 }
 
-void Robot::TeleopInit() { Drive(0, 0, true); }
+void Robot::TeleopInit() { Drive(0, 0, true);  armUp = true;}
 void Robot::TeleopPeriodic()
 {
   Direction();
@@ -122,9 +122,13 @@ void Robot::Arm()
   //std::cout << "enterd arm up\n";
   if(m_xBox.GetXButtonPressed())
   {
-    Robot::armspeed = 0.6;
+    Robot::armspeed = 0.4;
   }
   else if (m_xBox.GetYButtonPressed())
+  {
+    Robot::armspeed = 0.6;
+  }
+  else if(m_xBox.GetBackButtonPressed())
   {
     Robot::armspeed = 1;
   }
@@ -132,14 +136,13 @@ void Robot::Arm()
   {
     scoreAuto();
   }
-  float armAngle = ((m_xBox.GetRawAxis(2) + 1) / 2) - ((m_xBox.GetRawAxis(3) + 1) / 2);
-  if (armAngle > 0 && m_LowerSwitch.Get() == false)
+  if ( m_xBox.GetRawAxis(2) >= 0.2 && m_UpperSwitch.Get() == false)
+  {
+    m_angle.Set(-0.6);
+  }
+  else if (m_LowerSwitch.Get() == false && m_xBox.GetRawAxis(2) < 0.2 && m_xBox.GetRawAxis(3) < 0.2)
   {
     m_angle.Set(1);
-  }
-  else if (armAngle < 0 && m_UpperSwitch.Get() == false)
-  {
-    m_angle.Set(-1);
   }
   else
   {
@@ -164,7 +167,7 @@ void Robot::Arm()
 void Robot::scoreAuto()
 {
   m_angle.Set(-1);
-  std::this_thread::sleep_for(std::chrono::milliseconds(240));
+  std::this_thread::sleep_for(std::chrono::milliseconds(245));
   m_intake.Set(-1);
   std::this_thread::sleep_for(std::chrono::milliseconds(200));
   m_angle.Set(1);

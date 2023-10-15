@@ -50,10 +50,13 @@ class Robot : public frc::TimedRobot {
 
   void forwardFunction();
 
-  int atonMode = 3;
+  int atonMode = 1;
+  //1 right
+  //2 mid
+  //3 left
 
-
-  float armspeed = 0.7;
+  float armspeed = 0.4;
+  bool armUp = true;
 
   private:
   //Declaring xbox contoller
