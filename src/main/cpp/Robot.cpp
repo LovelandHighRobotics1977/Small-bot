@@ -29,7 +29,7 @@ void Robot::AutonomousInit()
   switch (Robot::atonMode)
   {
   case 0:
-  scoreAuto();
+  driveFor(10, 0.25);
 
   break;
   case 1:
@@ -59,7 +59,7 @@ void Robot::AutonomousInit()
     driveFor(1, 0.25);
     turnFor(22.5, 0.25, 'l');
     driveFor(3.5, 0.25);
-    turnFor(23, 0.25, 'r');
+    turnFor(25, 0.25, 'r');
     driveFor(12, 0.25);
     break;
   default:
@@ -128,7 +128,7 @@ void Robot::Arm()
   {
     Robot::armspeed = 0.6;
   }
-  else if(m_xBox.GetBackButtonPressed())
+  else if(m_xBox.GetBButtonPressed())
   {
     Robot::armspeed = 1;
   }
@@ -136,11 +136,11 @@ void Robot::Arm()
   {
     scoreAuto();
   }
-  if ( m_xBox.GetRawAxis(2) >= 0.2 && m_UpperSwitch.Get() == false)
+  if ( m_xBox.GetRawAxis(2) >= 0.2 && m_UpperSwitch.Get() == true)
   {
     m_angle.Set(-0.6);
   }
-  else if (m_LowerSwitch.Get() == false && m_xBox.GetRawAxis(2) < 0.2 && m_xBox.GetRawAxis(3) < 0.2)
+  else if (m_UpperSwitch.Get() == false && m_xBox.GetRawAxis(2) < 0.2 && m_xBox.GetRawAxis(3) < 0.2)
   {
     m_angle.Set(1);
   }
@@ -179,7 +179,7 @@ void Robot::scoreAuto()
 
 void Robot::driveFor (int distance, float speed)
 {
-  int time = fabs(distance * (61 / speed));
+  int time = fabs(distance * 92 / speed);
   m_l1.SetNeutralMode(Coast);
   m_l2.SetNeutralMode(Coast);
   m_r1.SetNeutralMode(Coast);
@@ -194,7 +194,7 @@ void Robot::driveFor (int distance, float speed)
 
 void Robot::turnFor(int degrees, float speed, char direction)
 {
-  int time = fabs(degrees * (1.55 / speed));
+  int time = fabs(degrees * (4.77 / speed));
   if (direction == 'r')
   {
     m_l1.Set(speed -
@@ -220,7 +220,7 @@ void Robot::Drive(float left, float right, bool stop)
 {
   // setting motor speeds to parameters
   left *= -(((-m_joystick.GetRawAxis(4)) + 1) / 2) -
-          (0.02 * (1 - m_joystick.GetRawAxis(4)));
+           (0.2 * (1 - m_joystick.GetRawAxis(4)));
   right *= (((-m_joystick.GetRawAxis(4)) + 1) / 2);
   // if (m_pdp.GetCurrent(14) < 10 && m_pdp.GetCurrent(15) < 10 &&
   // m_pdp.GetCurrent(16) < 10 && m_pdp.GetCurrent(17) < 10)

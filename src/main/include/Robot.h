@@ -50,7 +50,7 @@ class Robot : public frc::TimedRobot {
 
   void forwardFunction();
 
-  int atonMode = 1;
+  int atonMode = 3;
   //1 right
   //2 mid
   //3 left
@@ -64,13 +64,13 @@ class Robot : public frc::TimedRobot {
   
   //Declaring motors and establishing CAN IDs 
   //use phoenix tuner to get CAN IDs and put them in the brackets
-  WPI_TalonFX m_l1{1};
-  WPI_TalonFX m_l2{2};
+  WPI_TalonFX m_l1{5};
+  WPI_TalonFX m_l2{6};
   WPI_TalonFX m_r1{3};
   WPI_TalonFX m_r2{4};
   //declareing mech motore
-  WPI_TalonSRX m_angle{5};
-  WPI_TalonSRX m_intake{6};
+  WPI_TalonSRX m_angle{1};
+  WPI_TalonSRX m_intake{2};
   //declaring limit switches
   frc::DigitalInput m_LowerSwitch{0};
   frc::DigitalInput m_UpperSwitch{1};
