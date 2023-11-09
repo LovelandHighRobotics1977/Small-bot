@@ -37,7 +37,7 @@ void Robot::AutonomousInit()
     driveFor(2, 0.4);
     turnFor(22.5, 0.25, 'r');
     driveFor(4, 0.4);
-    turnFor(22.5, 0.25, 'l');
+    turnFor(20, 0.25, 'l');
     driveFor(12, 0.4);
   break;
 
@@ -58,8 +58,8 @@ void Robot::AutonomousInit()
     scoreAuto();
     driveFor(1, 0.25);
     turnFor(22.5, 0.25, 'l');
-    driveFor(3.5, 0.25);
-    turnFor(25, 0.25, 'r');
+    driveFor(4.5, 0.25);
+    turnFor(24, 0.25, 'r');
     driveFor(12, 0.25);
     break;
   default:
@@ -184,8 +184,8 @@ void Robot::driveFor (int distance, float speed)
   m_l2.SetNeutralMode(Coast);
   m_r1.SetNeutralMode(Coast);
   m_r2.SetNeutralMode(Coast);
-  m_l1.Set(-speed);
-  m_l2.Set(-speed);
+  m_l1.Set(-speed*0.2);
+  m_l2.Set(-speed * 0.2);
   m_r1.Set(speed);
   m_r2.Set(speed);
   std::this_thread::sleep_for(std::chrono::milliseconds(time));
@@ -219,7 +219,7 @@ void Robot::turnFor(int degrees, float speed, char direction)
 void Robot::Drive(float left, float right, bool stop)
 {
   // setting motor speeds to parameters
-  left *= -(((-m_joystick.GetRawAxis(4)) + 1) / 2) -
+  left *= -(((-m_joystick.GetRawAxis(4)) + 1) / 2) +
            (0.2 * (1 - m_joystick.GetRawAxis(4)));
   right *= (((-m_joystick.GetRawAxis(4)) + 1) / 2);
   // if (m_pdp.GetCurrent(14) < 10 && m_pdp.GetCurrent(15) < 10 &&

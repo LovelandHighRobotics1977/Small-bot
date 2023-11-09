@@ -51,9 +51,9 @@ class Robot : public frc::TimedRobot {
   void forwardFunction();
 
   int atonMode = 3;
-  //1 right
+  //1 short, Right Red, Left Blue
   //2 mid
-  //3 left
+  //3 long, Left Red, Left Blue
 
   float armspeed = 0.4;
   bool armUp = true;
